@@ -2,7 +2,7 @@
 
 namespace Models.Enums
 {
-    public enum Role
+    public enum Role : sbyte
     {
         [Description("user")]
         User,

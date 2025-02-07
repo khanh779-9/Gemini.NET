@@ -2,7 +2,7 @@
 
 namespace Models.Enums
 {
-    public enum ResponseMimeType
+    public enum ResponseMimeType : sbyte
     {
         [Description("application/json")]
         Json,

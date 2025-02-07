@@ -2,7 +2,7 @@
 
 namespace Models.API_Response.Success
 {
-    public class ApiResponse : BaseApiResponse
+    public class ApiResponse
     {
         [JsonProperty("candidates")]
         public List<Candidate>? Candidates { get; set; }

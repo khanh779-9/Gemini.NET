@@ -2,7 +2,7 @@
 
 namespace Models.Enums
 {
-    public enum SafetySettingHarmCategory
+    public enum SafetySettingHarmCategory : sbyte
     {
         [Description("HARM_CATEGORY_DANGEROUS_CONTENT")]
         DangerousContent,

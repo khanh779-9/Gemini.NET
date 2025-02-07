@@ -178,5 +178,10 @@ namespace Gemini.NET
                 throw new InvalidOperationException($"Failed to send request to Gemini:\n{json}", ex);
             }
         }
+
+        public static ModelVersion GetLatestStableModelVersion()
+        {
+            return Enum.GetValues(typeof(ModelVersion)).Cast<ModelVersion>().Max();
+        }
     }
 }

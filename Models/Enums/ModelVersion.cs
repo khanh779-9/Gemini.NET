@@ -2,7 +2,7 @@
 
 namespace Models.Enums
 {
-    public enum ModelVersion
+    public enum ModelVersion : sbyte
     {
         [Description("undefined")]
         Undefined,
@@ -13,9 +13,6 @@ namespace Models.Enums
         [Description("gemini-1.5-pro")]
         Gemini_15_Pro,
 
-        [Description("gemini-2.0-flash")]
-        Gemini_20_Flash,
-
         [Description("gemini-2.0-flash-lite-preview-02-05")]
         Gemini_20_Flash_Lite,
 
@@ -24,5 +21,8 @@ namespace Models.Enums
 
         [Description("gemini-2.0-flash-thinking-exp-01-21")]
         Gemini_20_Flash_Thinking,
+
+        [Description("gemini-2.0-flash")]
+        Gemini_20_Flash,
     }
 }

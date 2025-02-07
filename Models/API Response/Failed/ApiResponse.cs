@@ -2,7 +2,7 @@
 
 namespace Models.API_Response.Failed
 {
-    public class ApiResponse : BaseApiResponse
+    public class ApiResponse
     {
         [JsonProperty("error")]
         public Error Error { get; set; }

@@ -7,7 +7,7 @@ namespace Models.Enums
     /// Enum representing the harm block threshold settings.
     /// For more details, refer to <see href="https://ai.google.dev/api/generate-content#HarmBlockThreshold"/>.
     /// </summary>
-    public enum SafetySettingHarmThreshold
+    public enum SafetySettingHarmThreshold : sbyte
     {
         /// <summary>
         /// Block when the probability score or the severity score is "LOW", MEDIUM or HIGH.
