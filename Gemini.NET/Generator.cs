@@ -1,5 +1,5 @@
 ﻿using Commons;
-using Gemini.NET.Response_Models;
+using Gemini.NET.Client_Models;
 using Models.API_Request;
 using Models.Enums;
 using System.Net.Http.Headers;
@@ -16,6 +16,11 @@ namespace Gemini.NET
         private bool _includesGroundingDetailInResponse = false;
         private bool _includesSearchEntryPointInResponse = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Generator"/> class.
+        /// </summary>
+        /// <param name="apiKey"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public Generator(string apiKey)
         {
             if (!Validator.CanBeValidApiKey(apiKey))
@@ -26,6 +31,13 @@ namespace Gemini.NET
             _apiKey = apiKey;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Generator"/> class.
+        /// </summary>
+        /// <param name="cloudProjectName"></param>
+        /// <param name="cloudProjectId"></param>
+        /// <param name="bearer"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public Generator(string cloudProjectName, string cloudProjectId, string bearer)
         {
             if (string.IsNullOrEmpty(cloudProjectName))
@@ -49,6 +61,10 @@ namespace Gemini.NET
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
+        /// <summary>
+        /// Includes grounding detail in the response.
+        /// </summary>
+        /// <returns></returns>
         public Generator IncludesGroundingDetailInResponse()
         {
             if (!_includesGroundingDetailInResponse)
@@ -58,6 +74,10 @@ namespace Gemini.NET
             return this;
         }
 
+        /// <summary>
+        /// Excludes grounding detail from the response.
+        /// </summary>
+        /// <returns></returns>
         public Generator ExcludesGroundingDetailFromResponse()
         {
             if (_includesGroundingDetailInResponse)
@@ -67,6 +87,11 @@ namespace Gemini.NET
             return this;
         }
 
+        /// <summary>
+        /// Includes search entry point in the response.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public Generator IncludesSearchEntryPointInResponse()
         {
             if (!_includesGroundingDetailInResponse)
@@ -82,6 +107,10 @@ namespace Gemini.NET
             return this;
         }
 
+        /// <summary>
+        /// Excludes search entry point from the response.
+        /// </summary>
+        /// <returns></returns>
         public Generator ExcludesSearchEntryPointFromResponse()
         {
             if (_includesSearchEntryPointInResponse)
@@ -92,7 +121,15 @@ namespace Gemini.NET
             return this;
         }
 
-        public async Task<Response> GenerateContentAsync(ApiRequest request, ModelVersion modelVersion = ModelVersion.Gemini_20_Flash)
+        /// <summary>
+        /// Generates content based on the provided API request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="modelVersion"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<ModelResponse> GenerateContentAsync(ApiRequest request, ModelVersion modelVersion = ModelVersion.Gemini_20_Flash)
         {
             if (request.Tools != null && request.Tools.Count > 0 && !Validator.SupportsGrouding(modelVersion))
             {
@@ -171,6 +208,11 @@ namespace Gemini.NET
             }
         }
 
+
+        /// <summary>
+        /// Gets the latest stable model version of Gemini.
+        /// </summary>
+        /// <returns></returns>
         public static ModelVersion GetLatestStableModelVersion()
         {
             return Enum.GetValues(typeof(ModelVersion)).Cast<ModelVersion>().Max();

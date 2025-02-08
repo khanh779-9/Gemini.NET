@@ -8,31 +8,31 @@ namespace Models.API_Response.Success
     public class UsageMetadata
     {
         /// <summary>
-        /// Gets or sets the prompt token count.
+        /// The prompt token count.
         /// </summary>
         [JsonProperty("promptTokenCount")]
         public int? PromptTokenCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the candidates token count.
+        /// The candidates token count.
         /// </summary>
         [JsonProperty("candidatesTokenCount")]
         public int? CandidatesTokenCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the total token count.
+        /// The total token count.
         /// </summary>
         [JsonProperty("totalTokenCount")]
         public int? TotalTokenCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the details of the prompt tokens.
+        /// The details of the prompt tokens.
         /// </summary>
         [JsonProperty("promptTokensDetails")]
         public List<PromptTokensDetail>? PromptTokensDetails { get; set; }
 
         /// <summary>
-        /// Gets or sets the details of the candidates tokens.
+        /// The details of the candidates tokens.
         /// </summary>
         [JsonProperty("candidatesTokensDetails")]
         public List<CandidatesTokensDetail>? CandidatesTokensDetails { get; set; }

@@ -8,13 +8,13 @@ namespace Models.API_Response
     public class PromptTokensDetail
     {
         /// <summary>
-        /// Gets or sets the modality of the prompt tokens.
+        /// The modality of the prompt tokens.
         /// </summary>
         [JsonProperty("modality")]
         public string Modality { get; set; }
 
         /// <summary>
-        /// Gets or sets the token count of the prompt tokens.
+        /// The token count of the prompt tokens.
         /// </summary>
         [JsonProperty("tokenCount")]
         public int? TokenCount { get; set; }
