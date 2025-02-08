@@ -4,11 +4,27 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageIcon>icon.png</PackageIcon>
+    <Copyright>© 2025 Phan Xuan Quang / Gemini.NET</Copyright>
+    <PackageProjectUrl>https://github.com/phanxuanquang/Gemini.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/phanxuanquang/Gemini.NET</RepositoryUrl>
+    <Description>A lightweight SDK enabling integration of Gemini for .NET in a simple way</Description>
+    <Company>github.com/phanxuanquang</Company>
+    <Authors>Phan Xuan Quang</Authors>
+    <Title>Gemini.NET</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Commons\Commons.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
