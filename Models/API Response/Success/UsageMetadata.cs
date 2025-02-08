@@ -14,9 +14,9 @@ namespace Models.API_Response.Success
         public int? TotalTokenCount { get; set; }
 
         [JsonProperty("promptTokensDetails")]
-        public List<PromptTokensDetail> PromptTokensDetails { get; set; }
+        public List<PromptTokensDetail>? PromptTokensDetails { get; set; }
 
         [JsonProperty("candidatesTokensDetails")]
-        public List<CandidatesTokensDetail> CandidatesTokensDetails { get; set; }
+        public List<CandidatesTokensDetail>? CandidatesTokensDetails { get; set; }
     }
 }

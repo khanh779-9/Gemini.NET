@@ -1,4 +1,5 @@
 ﻿using Commons;
+using Gemini.NET.Response_Models;
 using Models.API_Request;
 using Models.Enums;
 using Models.Shared;
@@ -130,7 +131,7 @@ namespace Gemini.NET
             };
         }
 
-        public async Task<Models.API_Response.Success.ApiResponse> GenerateContentAsync(ApiRequest request, ModelVersion modelVersion = ModelVersion.Gemini_20_Flash)
+        public async Task<Response> GenerateContentAsync(ApiRequest request, ModelVersion modelVersion = ModelVersion.Gemini_20_Flash)
         {
             if (request.Tools != null && request.Tools.Count > 0 && !Validator.SupportsGrouding(modelVersion))
             {
@@ -165,8 +166,36 @@ namespace Gemini.NET
                         var dto = JsonHelper.AsObject<Models.API_Response.Failed.ApiResponse>(responseData);
                         throw new InvalidOperationException(dto == null ? "Undefined" : $"{dto.Error.Status} ({dto.Error.Code}): {dto.Error.Message}");
                     }
+                    else
+                    {
+                        var dto = JsonHelper.AsObject<Models.API_Response.Success.ApiResponse>(responseData);
+                        var groudingMetadata = dto.Candidates[0].GroundingMetadata;
 
-                    return JsonHelper.AsObject<Models.API_Response.Success.ApiResponse>(responseData);
+                        return new()
+                        {
+                            Result = dto.Candidates[0].Content != null
+                                ? dto.Candidates[0].Content.Parts[0].Text
+                                : "Failed to generate content",
+                            GroundingDetail = groudingMetadata == null
+                                ? null
+                                : new GroundingDetail
+                                {
+                                    RenderedContentAsHtml = groudingMetadata?.SearchEntryPoint?.RenderedContent,
+                                    SearchSuggestions = groudingMetadata?.WebSearchQueries,
+                                    ReliableInformation = groudingMetadata?.GroundingSupports?
+                                        .OrderByDescending(s => s.ConfidenceScores.Max())
+                                        .Select(s => s.Segment.Text)
+                                        .ToList(),
+                                    Sources = groudingMetadata?.GroundingChunks?
+                                        .Select(c => new GroundingSource
+                                        {
+                                            Domain = c.Web.Title,
+                                            Url = c.Web.Uri,
+                                        })
+                                        .ToList(),
+                                },
+                        };
+                    }
                 }
                 catch (Exception ex)
                 {

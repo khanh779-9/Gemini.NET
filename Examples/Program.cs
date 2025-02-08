@@ -1,13 +1,25 @@
 ﻿using Gemini.NET;
+using Models.Enums;
 
 namespace Examples
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            var generatorWithApiKey = new Generator("Your API Key");
-            var generatorWithCloudProjectCredentials = new Generator("Project Name", "Project ID", "Bearer Token");
+            var apiKey = Console.ReadLine();
+
+            var generatorWithApiKey = new Generator(apiKey);
+            var apiRequest = Generator.BuildDefaultRequest("What is **Love**?", 1.0F, ResponseMimeType.PlainText, true);
+            try
+            {
+                var response = await generatorWithApiKey.GenerateContentAsync(apiRequest);
+                Console.WriteLine(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
