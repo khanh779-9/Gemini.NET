@@ -6,10 +6,10 @@ namespace Models.API_Request
     public class ApiRequest
     {
         [JsonProperty("contents")]
-        public required List<Content> Contents { get; set; }
+        public List<Content> Contents { get; set; }
 
         [JsonProperty("generationConfig")]
-        public required GenerationConfig GenerationConfig { get; set; }
+        public GenerationConfig GenerationConfig { get; set; }
 
         [JsonProperty("systemInstruction")]
         public SystemInstruction? SystemInstruction { get; set; }

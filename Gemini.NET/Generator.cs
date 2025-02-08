@@ -2,7 +2,6 @@
 using Gemini.NET.Response_Models;
 using Models.API_Request;
 using Models.Enums;
-using Models.Shared;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -14,6 +13,8 @@ namespace Gemini.NET
 
         private readonly HttpClient _client = new();
         private readonly string? _apiKey;
+        private bool _includesGroundingDetailInResponse = false;
+        private bool _includesSearchEntryPointInResponse = false;
 
         public Generator(string apiKey)
         {
@@ -25,7 +26,7 @@ namespace Gemini.NET
             _apiKey = apiKey;
         }
 
-        public Generator(string cloudProjectName, string cloudProjectId, string bearerToken)
+        public Generator(string cloudProjectName, string cloudProjectId, string bearer)
         {
             if (string.IsNullOrEmpty(cloudProjectName))
             {
@@ -37,98 +38,58 @@ namespace Gemini.NET
                 throw new ArgumentNullException(nameof(cloudProjectId), "Cloud project ID is required.");
             }
 
-            if (string.IsNullOrEmpty(bearerToken))
+            if (string.IsNullOrEmpty(bearer))
             {
-                throw new ArgumentNullException(nameof(bearerToken), "Bearer token is required.");
+                throw new ArgumentNullException(nameof(bearer), "Bearer token is required.");
             }
 
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add(cloudProjectName, cloudProjectId);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public static ApiRequest BuildDefaultRequest(string prompt, float temperature = 1.0F, ResponseMimeType responseMimeType = ResponseMimeType.PlainText, bool useGrounding = false, string systemInstruction = "")
+        public Generator IncludesGroundingDetailInResponse()
         {
-            prompt = string.IsNullOrEmpty(prompt) ? string.Empty : prompt.Trim();
-            systemInstruction = string.IsNullOrEmpty(systemInstruction) ? string.Empty : systemInstruction.Trim();
-
-            if (string.IsNullOrEmpty(prompt))
+            if (!_includesGroundingDetailInResponse)
             {
-                throw new ArgumentNullException(nameof(prompt), "Prompt is required.");
+                _includesGroundingDetailInResponse = true;
+            }
+            return this;
+        }
+
+        public Generator ExcludesGroundingDetailFromResponse()
+        {
+            if (_includesGroundingDetailInResponse)
+            {
+                _includesGroundingDetailInResponse = false;
+            }
+            return this;
+        }
+
+        public Generator IncludesSearchEntryPointInResponse()
+        {
+            if (!_includesGroundingDetailInResponse)
+            {
+                throw new InvalidOperationException("Grounding detail must be included in the response to include search entry point.");
             }
 
-            if (temperature < 0.0F || temperature > 2.0F)
+            if (!_includesSearchEntryPointInResponse)
             {
-                throw new ArgumentOutOfRangeException(nameof(temperature), "Temperature must be between 0.0 and 2.0.");
+                _includesSearchEntryPointInResponse = true;
             }
 
-            return new ApiRequest
+            return this;
+        }
+
+        public Generator ExcludesSearchEntryPointFromResponse()
+        {
+            if (_includesSearchEntryPointInResponse)
             {
-                Contents =
-                [
-                    new Content
-                    {
-                        Parts =
-                        [
-                            new Part
-                            {
-                                Text = prompt
-                            }
-                        ],
-                        Role = EnumHelper.GetDescription(Role.User),
-                    }
-                ],
-                GenerationConfig = new GenerationConfig
-                {
-                    Temperature = temperature,
-                    ResponseMimeType = EnumHelper.GetDescription(responseMimeType),
-                },
-                SafetySettings =
-                [
-                    new SafetySetting
-                    {
-                       Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),
-                    },
-                    new SafetySetting
-                    {
-                       Category = EnumHelper.GetDescription(SafetySettingHarmCategory.Harassment),
-                    },
-                    new SafetySetting
-                    {
-                       Category = EnumHelper.GetDescription(SafetySettingHarmCategory.CivicIntegrity),
-                    },
-                    new SafetySetting
-                    {
-                       Category = EnumHelper.GetDescription(SafetySettingHarmCategory.HateSpeech),
-                    },
-                    new SafetySetting
-                    {
-                       Category = EnumHelper.GetDescription(SafetySettingHarmCategory.SexuallyExplicit),
-                    },
-                ],
-                Tools = useGrounding
-                    ?
-                    [
-                        new Tool
-                        {
-                            GoogleSearch = new GoogleSearch()
-                        }
-                    ]
-                    : null,
-                SystemInstruction = string.IsNullOrEmpty(systemInstruction)
-                    ? null
-                    : new SystemInstruction
-                    {
-                        Parts =
-                        [
-                            new Part
-                            {
-                                Text = systemInstruction
-                            }
-                        ]
-                    }
-            };
+                _includesSearchEntryPointInResponse = false;
+            }
+
+            return this;
         }
 
         public async Task<Response> GenerateContentAsync(ApiRequest request, ModelVersion modelVersion = ModelVersion.Gemini_20_Flash)
@@ -176,11 +137,13 @@ namespace Gemini.NET
                             Result = dto.Candidates[0].Content != null
                                 ? dto.Candidates[0].Content.Parts[0].Text
                                 : "Failed to generate content",
-                            GroundingDetail = groudingMetadata == null
+                            GroundingDetail = groudingMetadata == null || !_includesGroundingDetailInResponse
                                 ? null
                                 : new GroundingDetail
                                 {
-                                    RenderedContentAsHtml = groudingMetadata?.SearchEntryPoint?.RenderedContent,
+                                    RenderedContentAsHtml = _includesSearchEntryPointInResponse
+                                        ? groudingMetadata?.SearchEntryPoint?.RenderedContent
+                                        : null,
                                     SearchSuggestions = groudingMetadata?.WebSearchQueries,
                                     ReliableInformation = groudingMetadata?.GroundingSupports?
                                         .OrderByDescending(s => s.ConfidenceScores.Max())
