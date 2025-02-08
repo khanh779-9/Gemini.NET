@@ -13,6 +13,8 @@
     <Authors>Phan Xuan Quang</Authors>
     <Title>Gemini.NET</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
