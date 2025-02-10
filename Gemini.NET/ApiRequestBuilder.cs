@@ -1,7 +1,8 @@
-﻿using Commons;
-using Gemini.NET.Client_Models;
-using Models.API_Request;
+﻿using Models.Request;
 using Models.Enums;
+using Models.Shared;
+using Gemini.NET.Client_Models;
+using Helpers;
 using Models.Shared;
 
 namespace Gemini.NET

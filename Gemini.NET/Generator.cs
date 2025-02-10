@@ -1,7 +1,7 @@
-﻿using Commons;
-using Gemini.NET.Client_Models;
-using Models.API_Request;
+﻿using Models.Request;
 using Models.Enums;
+using Gemini.NET.Client_Models;
+using Helpers;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -29,6 +29,25 @@ namespace Gemini.NET
             }
 
             _apiKey = apiKey;
+        }
+
+        public async Task<bool> IsValidApiKeyAsync()
+        {
+            var apiRequest = new ApiRequestBuilder()
+                .WithPrompt("Say `Hello World` to me!")
+                .DisableAllSafetySettings()
+                .WithDefaultGenerationConfig(0.2F)
+                .Build();
+
+            try
+            {
+                await GenerateContentAsync(apiRequest, ModelVersion.Gemini_20_Flash_Lite);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -161,12 +180,12 @@ namespace Gemini.NET
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        var dto = JsonHelper.AsObject<Models.API_Response.Failed.ApiResponse>(responseData);
+                        var dto = JsonHelper.AsObject<Models.Response.Failed.ApiResponse>(responseData);
                         throw new InvalidOperationException(dto == null ? "Undefined" : $"{dto.Error.Status} ({dto.Error.Code}): {dto.Error.Message}");
                     }
                     else
                     {
-                        var dto = JsonHelper.AsObject<Models.API_Response.Success.ApiResponse>(responseData);
+                        var dto = JsonHelper.AsObject<Models.Response.Success.ApiResponse>(responseData);
                         var groudingMetadata = dto.Candidates[0].GroundingMetadata;
 
                         return new()
