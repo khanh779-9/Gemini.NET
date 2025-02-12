@@ -4,6 +4,8 @@ using Models.Shared;
 using Gemini.NET.Client_Models;
 using Helpers;
 using Models.Shared;
+using Gemini.NET.API_Models.API_Request;
+using Gemini.NET.API_Models.Enums;
 
 namespace Gemini.NET
 {
@@ -19,6 +21,7 @@ namespace Gemini.NET
         private bool _useGrounding = false;
         private List<SafetySetting>? _safetySettings;
         private List<Content>? _chatHistory;
+        private List<InlineData>? _inlineData;
 
         /// <summary>
         /// Sets the system instruction for the API request.
@@ -179,6 +182,18 @@ namespace Gemini.NET
         }
 
         /// <summary>
+        /// Sets the media content for the API request.
+        /// </summary>
+        /// <param name="mimeType"></param>
+        /// <param name="data">File URI for the video-based types, and base64-encoded for image types</param>
+        /// <returns></returns>
+        public ApiRequestBuilder WithInlineData(List<InlineData> inlineData)
+        {
+            _inlineData = inlineData;
+            return this;
+        }
+
+        /// <summary>
         /// Builds the API request with the configured parameters.
         /// </summary>
         /// <returns>The constructed <see cref="ApiRequest"/>.</returns>
@@ -198,6 +213,10 @@ namespace Gemini.NET
             {
                 Parts =
                 [
+                    new Part
+                    {
+                        InlineData = _inlineData
+                    }, 
                     new Part
                     {
                         Text = _prompt

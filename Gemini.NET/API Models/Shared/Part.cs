@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Gemini.NET.API_Models.API_Request;
+using Newtonsoft.Json;
 
 namespace Models.Shared
 {
@@ -11,10 +12,14 @@ namespace Models.Shared
     {
         /// <summary>
         /// The text content of this part.
-        /// This is a required field that contains the actual message text or data.
-        /// Multiple parts can be combined within a Content object to form a complete message.
         /// </summary>
         [JsonProperty("text")]
-        public required string Text { get; set; }
+        public string? Text { get; set; }
+
+        /// <summary>
+        /// (Optional) The inline data for this part, contains the media content
+        /// </summary>
+        [JsonProperty("inline_data")]
+        public InlineData? InlineData { get; set; }
     }
 }
