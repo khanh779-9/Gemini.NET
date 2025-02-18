@@ -24,32 +24,7 @@ namespace Example_APIs.Controllers
             try
             {
                 var response = await generatorWithApiKey.GenerateContentAsync(apiRequest, Generator.GetLatestStableModelVersion());
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost(Name = "GenerateContentWithCloudProjectCredentials")]
-        public async Task<IActionResult> GenerateContentWithCloudProjectCredentials(string bearer, string prompt)
-        {
-            var generatorWithApiKey = new Generator(bearer)
-                .IncludesGroundingDetailInResponse()
-                .IncludesSearchEntryPointInResponse();
-
-            var apiRequest = new ApiRequestBuilder()
-                .WithPrompt(prompt)
-                .EnableGrounding()
-                .WithDefaultGenerationConfig()
-                .DisableAllSafetySettings()
-                .Build();
-
-            try
-            {
-                var response = await generatorWithApiKey.GenerateContentAsync(apiRequest, Generator.GetLatestStableModelVersion());
-                return Ok(response);
+                return Ok(response.Result);
             }
             catch (Exception ex)
             {

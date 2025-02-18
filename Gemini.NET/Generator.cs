@@ -4,6 +4,7 @@ using Gemini.NET.Client_Models;
 using Helpers;
 using System.Net.Http.Headers;
 using System.Text;
+using Gemini.NET.Helpers;
 
 namespace Gemini.NET
 {
@@ -31,6 +32,10 @@ namespace Gemini.NET
             _apiKey = apiKey;
         }
 
+        /// <summary>
+        /// Check if the provided API key is valid.
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> IsValidApiKeyAsync()
         {
             var apiRequest = new ApiRequestBuilder()
@@ -188,10 +193,10 @@ namespace Gemini.NET
                         var dto = JsonHelper.AsObject<Models.Response.Success.ApiResponse>(responseData);
                         var groudingMetadata = dto.Candidates[0].GroundingMetadata;
 
-                        return new()
+                        var result = new ModelResponse
                         {
                             Result = dto.Candidates[0].Content != null
-                                ? dto.Candidates[0].Content.Parts[0].Text
+                                ? dto.Candidates[0].Content.Parts[0].Text.Trim()
                                 : "Failed to generate content",
                             GroundingDetail = groudingMetadata == null || !_includesGroundingDetailInResponse
                                 ? null
@@ -214,6 +219,22 @@ namespace Gemini.NET
                                         .ToList(),
                                 },
                         };
+
+                        if (dto.Candidates[0].Content != null 
+                            && _includesGroundingDetailInResponse 
+                            && groudingMetadata != null 
+                            && groudingMetadata?.GroundingSupports?.Count > 0)
+                        {
+                            var groundingChunks = groudingMetadata.GroundingChunks;
+                            foreach(var groundingSupport in groudingMetadata.GroundingSupports)
+                            {
+                                var url = groundingChunks[groundingSupport.GroundingChunkIndices[groundingSupport.ConfidenceScores.IndexOf(groundingSupport.ConfidenceScores.Max())].Value].Web.Uri;
+                                var segment = groundingSupport.Segment.Text;
+                                result.Result = result.Result.Replace(segment, $"[{segment}]({url})");
+                            }
+                        }
+
+                        return result;
                     }
                 }
                 catch (Exception ex)
