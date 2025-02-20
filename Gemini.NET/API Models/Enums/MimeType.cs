@@ -5,7 +5,7 @@ namespace Gemini.NET.API_Models.Enums
     /// <summary>
     /// The media type of the file specified in the Inline Data
     /// </summary>
-    public enum MimeType
+    public enum MimeType : sbyte
     {
         /// <summary>
         /// MIME type for PNG images.

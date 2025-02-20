@@ -3,6 +3,9 @@ using Gemini.NET.Client_Models;
 
 namespace Gemini.NET.Helpers
 {
+    /// <summary>
+    /// Helper class for image operations
+    /// </summary>
     public static class ImageHelper
     {
         private static readonly List<MimeType> _imageMimeTypes =
@@ -14,6 +17,13 @@ namespace Gemini.NET.Helpers
             MimeType.ImageWebp,
         ];
 
+        /// <summary>
+        /// Reads an image file and returns it as a Base64 encoded string
+        /// </summary>
+        /// <param name="imagePath"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public static ImageData ReadImage(string imagePath)
         {
             if (!File.Exists(imagePath))

@@ -1,5 +1,4 @@
 ﻿using Gemini.NET.Client_Models;
-using Helpers;
 using Models.Enums;
 using Models.Request;
 using System.Net.Http.Headers;
@@ -17,7 +16,7 @@ namespace Gemini.NET
         private bool _includesSearchEntryPointInResponse = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Generator"/> class.
+        /// Initializes a new instance of the <see cref="Generator"/> class using API key.
         /// </summary>
         /// <param name="apiKey"></param>
         /// <exception cref="ArgumentNullException"></exception>
@@ -25,10 +24,10 @@ namespace Gemini.NET
         {
             if (!Validator.CanBeValidApiKey(apiKey))
             {
-                throw new ArgumentNullException(nameof(apiKey), "Invalid API key.");
+                throw new ArgumentNullException(nameof(apiKey), "Invalid or expired API key.");
             }
 
-            _apiKey = apiKey;
+            _apiKey = apiKey.Trim();
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace Gemini.NET
 
             try
             {
-                await GenerateContentAsync(apiRequest, ModelVersion.Gemini_20_Flash_Lite);
+                await GenerateContentAsync(apiRequest, ModelVersion.Gemini_20_Flash_Lite).ConfigureAwait(false);
                 return true;
             }
             catch
@@ -55,22 +54,22 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Generator"/> class.
+        /// Initializes a new instance of the <see cref="Generator"/> class using Google Cloud project credentials.
         /// </summary>
-        /// <param name="cloudProjectName"></param>
-        /// <param name="cloudProjectId"></param>
-        /// <param name="bearer"></param>
+        /// <param name="cloudProjectName">The Google Cloud project name.</param>
+        /// <param name="cloudProjectId">The Google Cloud project ID.</param>
+        /// <param name="bearer">The Bearer token.</param>
         /// <exception cref="ArgumentNullException"></exception>
         public Generator(string cloudProjectName, string cloudProjectId, string bearer)
         {
             if (string.IsNullOrEmpty(cloudProjectName))
             {
-                throw new ArgumentNullException(nameof(cloudProjectName), "Cloud project name is required.");
+                throw new ArgumentNullException(nameof(cloudProjectName), "Google Cloud project name is required.");
             }
 
             if (string.IsNullOrEmpty(cloudProjectId))
             {
-                throw new ArgumentNullException(nameof(cloudProjectId), "Cloud project ID is required.");
+                throw new ArgumentNullException(nameof(cloudProjectId), "Google Cloud project ID is required.");
             }
 
             if (string.IsNullOrEmpty(bearer))

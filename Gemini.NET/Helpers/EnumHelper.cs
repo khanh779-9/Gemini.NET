@@ -1,10 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Helpers
+namespace Gemini.NET.Helpers
 {
+    /// <summary>
+    /// Helper class for enum operations
+    /// </summary>
     public static class EnumHelper
     {
+        /// <summary>
+        /// Get the description of an enum value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string GetDescription(Enum value)
         {
             FieldInfo? fi = value.GetType().GetField(value.ToString());

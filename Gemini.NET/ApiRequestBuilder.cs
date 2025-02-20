@@ -1,7 +1,6 @@
 ﻿using Gemini.NET.API_Models.API_Request;
 using Gemini.NET.Client_Models;
 using Gemini.NET.Helpers;
-using Helpers;
 using Models.Enums;
 using Models.Request;
 using Models.Shared;
@@ -30,7 +29,7 @@ namespace Gemini.NET
         /// <exception cref="ArgumentNullException">Thrown when the system instruction is null or empty.</exception>
         public ApiRequestBuilder WithSystemInstruction(string systemInstruction)
         {
-            if (string.IsNullOrEmpty(systemInstruction))
+            if (string.IsNullOrWhiteSpace(systemInstruction))
             {
                 throw new ArgumentNullException(nameof(systemInstruction), "System instruction can't be an empty string.");
             }
@@ -71,9 +70,9 @@ namespace Gemini.NET
         /// </summary>
         /// <param name="safetySettings">The list of safety settings to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
-        public ApiRequestBuilder WithSafetySettings(List<SafetySetting> safetySettings)
+        public ApiRequestBuilder WithSafetySettings(IEnumerable<SafetySetting> safetySettings)
         {
-            _safetySettings = safetySettings;
+            _safetySettings = safetySettings.ToList();
             return this;
         }
 
@@ -153,12 +152,12 @@ namespace Gemini.NET
         /// <summary>
         /// Sets the chat history.
         /// </summary>
-        /// <param name="chatMessages"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public ApiRequestBuilder WithChatHistory(List<ChatMessage> chatMessages)
+        /// <param name="chatMessages">The list of chat messages to set.</param>
+        /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the chat messages list is null or empty.</exception>
+        public ApiRequestBuilder WithChatHistory(IEnumerable<ChatMessage> chatMessages)
         {
-            if (chatMessages == null || chatMessages.Count == 0)
+            if (chatMessages == null || !chatMessages.Any())
             {
                 throw new ArgumentNullException(nameof(chatMessages), "Chat history can't be null or empty.");
             }
@@ -166,13 +165,10 @@ namespace Gemini.NET
             _chatHistory = chatMessages
                 .Select(message => new Content
                 {
-                    Parts =
-                    [
-                        new Part
-                        {
-                            Text = message.Content
-                        }
-                    ],
+                    Parts = new List<Part>
+                    {
+                        new Part { Text = message.Content }
+                    },
                     Role = EnumHelper.GetDescription(message.Role),
                 })
                 .ToList();
@@ -186,31 +182,31 @@ namespace Gemini.NET
         /// <param name="images">The list of image data to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the images list is null or empty.</exception>
-        public ApiRequestBuilder WithImages(List<ImageData> images)
+        public ApiRequestBuilder WithImages(IEnumerable<ImageData> images)
         {
-            if (images == null || images.Count == 0)
+            if (images == null || !images.Any())
             {
                 throw new ArgumentNullException(nameof(images), "Images can't be null or empty.");
             }
 
-            _images = images;
+            _images = images.ToList();
             return this;
         }
 
         /// <summary>
         /// Sets the images from file paths.
         /// </summary>
-        /// <param name="imageFilePath">The list of image file paths to set.</param>
+        /// <param name="imageFilePaths">The list of image file paths to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the image file paths list is null or empty.</exception>
-        public ApiRequestBuilder WithImages(List<string> imageFilePath)
+        public ApiRequestBuilder WithImages(IEnumerable<string> imageFilePaths)
         {
-            if (imageFilePath == null || imageFilePath.Count == 0)
+            if (imageFilePaths == null || !imageFilePaths.Any())
             {
-                throw new ArgumentNullException(nameof(imageFilePath), "Image file paths can't be null or empty.");
+                throw new ArgumentNullException(nameof(imageFilePaths), "Image file paths can't be null or empty.");
             }
 
-            _images = imageFilePath.Select(ImageHelper.ReadImage).ToList();
+            _images = imageFilePaths.Select(ImageHelper.ReadImage).ToList();
             return this;
         }
 

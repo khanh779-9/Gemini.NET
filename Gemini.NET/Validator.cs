@@ -49,6 +49,13 @@ namespace Gemini.NET
                 return false;
             }
 
+            apiKey = apiKey.Trim();
+
+            if (apiKey.Length != 39)
+            {
+                return false;
+            }
+
             if (!apiKey.StartsWith("AIza"))
             {
                 return false;
