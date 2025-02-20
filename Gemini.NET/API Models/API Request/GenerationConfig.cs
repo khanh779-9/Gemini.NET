@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Gemini.NET.Helpers;
+using Newtonsoft.Json;
 
 namespace Models.Request
 {

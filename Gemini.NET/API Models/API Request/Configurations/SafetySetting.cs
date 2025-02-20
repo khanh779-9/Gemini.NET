@@ -1,4 +1,5 @@
-﻿using Models.Enums;
+﻿using Gemini.NET.Helpers;
+using Models.Enums;
 using Newtonsoft.Json;
 
 namespace Models.Request

@@ -1,4 +1,5 @@
 ﻿using Gemini.NET.Client_Models;
+using Gemini.NET.Helpers;
 using Models.Enums;
 using Models.Request;
 using System.Net.Http.Headers;
