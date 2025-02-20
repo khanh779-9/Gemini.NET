@@ -1,10 +1,9 @@
-﻿using Models.Request;
-using Models.Enums;
-using Gemini.NET.Client_Models;
+﻿using Gemini.NET.Client_Models;
 using Helpers;
+using Models.Enums;
+using Models.Request;
 using System.Net.Http.Headers;
 using System.Text;
-using Gemini.NET.Helpers;
 
 namespace Gemini.NET
 {
@@ -220,13 +219,13 @@ namespace Gemini.NET
                                 },
                         };
 
-                        if (dto.Candidates[0].Content != null 
-                            && _includesGroundingDetailInResponse 
-                            && groudingMetadata != null 
+                        if (dto.Candidates[0].Content != null
+                            && _includesGroundingDetailInResponse
+                            && groudingMetadata != null
                             && groudingMetadata?.GroundingSupports?.Count > 0)
                         {
                             var groundingChunks = groudingMetadata.GroundingChunks;
-                            foreach(var groundingSupport in groudingMetadata.GroundingSupports)
+                            foreach (var groundingSupport in groudingMetadata.GroundingSupports)
                             {
                                 var url = groundingChunks[groundingSupport.GroundingChunkIndices[groundingSupport.ConfidenceScores.IndexOf(groundingSupport.ConfidenceScores.Max())].Value].Web.Uri;
                                 var segment = groundingSupport.Segment.Text;
@@ -244,7 +243,7 @@ namespace Gemini.NET
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to send request to Gemini:\n{json}", ex);
+                throw new InvalidOperationException($"Failed to send request to Gemini: {ex.Message}\n{json}", ex);
             }
         }
 

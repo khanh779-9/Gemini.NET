@@ -10,18 +10,19 @@ namespace Models.Enums
     public enum ModelVersion : sbyte
     {
         /// <summary>
-        /// Undefined model version.
-        /// </summary>
-        [Description("undefined")]
-        Undefined,
-
-        /// <summary>
         /// Gemini 1.5 Flash model version.
         /// Optimized for fast responses while maintaining good quality.
         /// Suitable for real-time applications requiring quick responses.
         /// </summary>
         [Description("gemini-1.5-flash")]
         Gemini_15_Flash,
+
+        /// <summary>
+        /// Gemini 1.5 Flash 8B model version.
+        /// Designed for lower intelligence tasks.
+        /// </summary>
+        [Description("gemini-1.5-flash-8b")]
+        Gemini_15_Flash_8B,
 
         /// <summary>
         /// Gemini 1.5 Pro model version.

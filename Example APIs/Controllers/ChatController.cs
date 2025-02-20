@@ -1,22 +1,21 @@
-using Gemini.NET;
+﻿using Gemini.NET;
+using Gemini.NET.Client_Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Example_APIs.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class GeminiController : ControllerBase
+    public class ChatController : ControllerBase
     {
-        [HttpPost(Name = "GenerateContentWithApiKey")]
-        public async Task<IActionResult> GenerateContentWithApiKey(string apiKey, string prompt)
+        [HttpPost("GenerationWithChatHistory")]
+        public async Task<IActionResult> GenerateContentWithChatHistory([FromBody] List<ChatMessage> chatMessages, string apiKey, string prompt)
         {
-            var generatorWithApiKey = new Generator(apiKey)
-                .IncludesGroundingDetailInResponse()
-                .IncludesSearchEntryPointInResponse();
+            var generatorWithApiKey = new Generator(apiKey);
 
             var apiRequest = new ApiRequestBuilder()
                 .WithPrompt(prompt)
-                .EnableGrounding()
+                .WithChatHistory(chatMessages)
                 .WithDefaultGenerationConfig()
                 .DisableAllSafetySettings()
                 .Build();

@@ -1,5 +1,5 @@
-﻿using Models.Shared;
-using Helpers;
+﻿using Helpers;
+using Models.Shared;
 using Newtonsoft.Json;
 
 namespace Models.Request

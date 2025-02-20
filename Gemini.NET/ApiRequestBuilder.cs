@@ -1,11 +1,10 @@
-﻿using Models.Request;
-using Models.Enums;
-using Models.Shared;
+﻿using Gemini.NET.API_Models.API_Request;
 using Gemini.NET.Client_Models;
+using Gemini.NET.Helpers;
 using Helpers;
+using Models.Enums;
+using Models.Request;
 using Models.Shared;
-using Gemini.NET.API_Models.API_Request;
-using Gemini.NET.API_Models.Enums;
 
 namespace Gemini.NET
 {
@@ -17,14 +16,14 @@ namespace Gemini.NET
     {
         private string? _prompt;
         private string? _systemInstruction;
-        private GenerationConfig? _config;
         private bool _useGrounding = false;
+        private GenerationConfig? _config;
         private List<SafetySetting>? _safetySettings;
         private List<Content>? _chatHistory;
-        private List<InlineData>? _inlineData;
+        private List<ImageData>? _images;
 
         /// <summary>
-        /// Sets the system instruction for the API request.
+        /// Sets the system instruction.
         /// </summary>
         /// <param name="systemInstruction">The system instruction to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
@@ -41,7 +40,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the generation configuration for the API request.
+        /// Sets the generation configuration.
         /// </summary>
         /// <param name="config">The generation configuration to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
@@ -58,7 +57,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Enables grounding for the API request.
+        /// Enables grounding.
         /// </summary>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
         public ApiRequestBuilder EnableGrounding()
@@ -68,7 +67,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the safety settings for the API request.
+        /// Sets the safety settings.
         /// </summary>
         /// <param name="safetySettings">The list of safety settings to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
@@ -79,7 +78,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Disables all safety settings for the API request.
+        /// Disables all safety settings.
         /// </summary>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
         public ApiRequestBuilder DisableAllSafetySettings()
@@ -112,7 +111,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the default generation configuration for the API request.
+        /// Sets the default generation configuration.
         /// </summary>
         /// <param name="temperature">The sampling temperature to set.</param>
         /// <param name="responseMimeType">The response MIME type to set.</param>
@@ -135,7 +134,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the prompt for the API request.
+        /// Sets the prompt.
         /// </summary>
         /// <param name="prompt">The prompt to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
@@ -152,7 +151,7 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the chat history for the API request.
+        /// Sets the chat history.
         /// </summary>
         /// <param name="chatMessages"></param>
         /// <returns></returns>
@@ -182,14 +181,36 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the media content for the API request.
+        /// Sets the images.
         /// </summary>
-        /// <param name="mimeType"></param>
-        /// <param name="data">File URI for the video-based types, and base64-encoded for image types</param>
-        /// <returns></returns>
-        public ApiRequestBuilder WithInlineData(List<InlineData> inlineData)
+        /// <param name="images">The list of image data to set.</param>
+        /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the images list is null or empty.</exception>
+        public ApiRequestBuilder WithImages(List<ImageData> images)
         {
-            _inlineData = inlineData;
+            if (images == null || images.Count == 0)
+            {
+                throw new ArgumentNullException(nameof(images), "Images can't be null or empty.");
+            }
+
+            _images = images;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the images from file paths.
+        /// </summary>
+        /// <param name="imageFilePath">The list of image file paths to set.</param>
+        /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the image file paths list is null or empty.</exception>
+        public ApiRequestBuilder WithImages(List<string> imageFilePath)
+        {
+            if (imageFilePath == null || imageFilePath.Count == 0)
+            {
+                throw new ArgumentNullException(nameof(imageFilePath), "Image file paths can't be null or empty.");
+            }
+
+            _images = imageFilePath.Select(ImageHelper.ReadImage).ToList();
             return this;
         }
 
@@ -200,23 +221,37 @@ namespace Gemini.NET
         /// <exception cref="ArgumentNullException">Thrown when the prompt is null or empty.</exception>
         public ApiRequest Build()
         {
-            if (string.IsNullOrEmpty(_prompt))
+            if (string.IsNullOrEmpty(_prompt) && _images == null)
             {
-                throw new ArgumentNullException(nameof(_prompt), "Prompt can't be an empty string.");
+                throw new InvalidOperationException("Prompt or images must be set.");
             }
 
-            var contents = _chatHistory == null
-                ? new List<Content>()
-                : _chatHistory;
+            var contents = _chatHistory ?? [];
+
+            if (_images != null)
+            {
+                contents.AddRange(_images
+                    .Select(image => new Content
+                    {
+                        Parts =
+                        [
+                            new Part
+                            {
+                                InlineData = new InlineData
+                                {
+                                    Data = image.Base64Data,
+                                    MimeType = EnumHelper.GetDescription(image.MimeType)
+                                }
+                            }
+                        ],
+                        Role = EnumHelper.GetDescription(Role.User),
+                    }));
+            }
 
             contents.Add(new Content
             {
                 Parts =
                 [
-                    new Part
-                    {
-                        InlineData = _inlineData
-                    }, 
                     new Part
                     {
                         Text = _prompt
@@ -231,25 +266,25 @@ namespace Gemini.NET
                 GenerationConfig = _config,
                 SafetySettings = _safetySettings,
                 Tools = _useGrounding
-                    ? new List<Tool>
-                    {
+                    ?
+                    [
                             new Tool
                             {
                                 GoogleSearch = new GoogleSearch()
                             }
-                    }
+                    ]
                     : null,
                 SystemInstruction = string.IsNullOrEmpty(_systemInstruction)
                     ? null
                     : new SystemInstruction
                     {
-                        Parts = new List<Part>
-                        {
+                        Parts =
+                        [
                                 new Part
                                 {
                                     Text = _systemInstruction
                                 }
-                        }
+                        ]
                     }
             };
         }

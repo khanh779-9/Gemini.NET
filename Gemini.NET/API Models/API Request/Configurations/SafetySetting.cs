@@ -1,5 +1,5 @@
-﻿using Models.Enums;
-using Helpers;
+﻿using Helpers;
+using Models.Enums;
 using Newtonsoft.Json;
 
 namespace Models.Request
