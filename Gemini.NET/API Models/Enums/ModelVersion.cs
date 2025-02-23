@@ -53,7 +53,7 @@ namespace Models.Enums
         /// Experimental version optimized for reasoning tasks.
         /// Best for applications requiring complex analysis and decision-making.
         /// </summary>
-        [Description("gemini-2.0-flash-thinking-exp-01-21")]
+        [Description("gemini-2.0-flash-thinking-exp")]
         Gemini_20_Flash_Thinking,
 
         /// <summary>

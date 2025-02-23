@@ -1,4 +1,4 @@
-﻿using Gemini.NET.Helpers;
+﻿using Helpers;
 using Models.Shared;
 using Newtonsoft.Json;
 
