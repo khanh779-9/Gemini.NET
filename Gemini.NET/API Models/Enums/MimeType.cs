@@ -44,6 +44,18 @@ namespace Gemini.NET.API_Models.Enums
         ImageJpeg,
 
         /// <summary>
+        /// MIME type for HEIF images.
+        /// </summary>
+        [Description("image/heif")]
+        ImageHeif,
+
+        /// <summary>
+        /// MIME type for HEIC images.
+        /// </summary>
+        [Description("image/heic")]
+        ImageHeic,
+
+        /// <summary>
         /// MIME type for WEBP images.
         /// </summary>
         [Description("image/webp")]

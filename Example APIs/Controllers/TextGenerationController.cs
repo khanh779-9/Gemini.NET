@@ -8,13 +8,13 @@ namespace Example_APIs.Controllers
     public class TextGenerationController : ControllerBase
     {
         [HttpPost("GenerationWithImages")]
-        public async Task<IActionResult> GenerateContentWithImages([FromBody] List<string> imageFilePaths, string apiKey, string prompt)
+        public async Task<IActionResult> GenerateContentWithImages([FromBody] List<string> base64Images, string apiKey, string prompt)
         {
             var generatorWithApiKey = new Generator(apiKey);
 
             var apiRequest = new ApiRequestBuilder()
                 .WithPrompt(prompt)
-                .WithImages(imageFilePaths)
+                .WithBase64Images(base64Images)
                 .WithDefaultGenerationConfig()
                 .DisableAllSafetySettings()
                 .Build();

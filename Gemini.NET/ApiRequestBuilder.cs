@@ -1,6 +1,6 @@
 ﻿using Gemini.NET.API_Models.API_Request;
 using Gemini.NET.Client_Models;
-using Helpers;
+using Gemini.NET.Helpers;
 using Models.Enums;
 using Models.Request;
 using Models.Shared;
@@ -19,7 +19,7 @@ namespace Gemini.NET
         private bool _useGrounding = false;
         private List<SafetySetting>? _safetySettings;
         private List<Content>? _chatHistory;
-        private List<InlineData>? _inlineData;
+        private List<ImageData>? _images;
 
         /// <summary>
         /// Sets the system instruction for the API request.
@@ -86,7 +86,7 @@ namespace Gemini.NET
                 {
                     new SafetySetting
                     {
-                        Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),          
+                        Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),
                     },
                     new SafetySetting
                     {
@@ -180,14 +180,12 @@ namespace Gemini.NET
         }
 
         /// <summary>
-        /// Sets the media content for the API request.
+        /// Sets the Base64 images for the API request.
         /// </summary>
-        /// <param name="mimeType"></param>
-        /// <param name="data">File URI for the video-based types, and base64-encoded for image types</param>
         /// <returns></returns>
-        public ApiRequestBuilder WithInlineData(List<InlineData> inlineData)
+        public ApiRequestBuilder WithBase64Images(List<string> images)
         {
-            _inlineData = inlineData;
+            _images = images.Select(ImageHelper.AsImageData).ToList();
             return this;
         }
 
@@ -207,14 +205,28 @@ namespace Gemini.NET
                 ? new List<Content>()
                 : _chatHistory;
 
+            if (_images != null)
+            {
+                contents.Add(new Content
+                {
+                    Parts = _images
+                        .Select(i => new Part
+                        {
+                            InlineData = new InlineData
+                            {
+                                MimeType = EnumHelper.GetDescription(i.MimeType),
+                                Data = i.Base64Data
+                            }
+                        })
+                        .ToList(),
+                    Role = EnumHelper.GetDescription(Role.User),
+                });
+            }
+
             contents.Add(new Content
             {
                 Parts =
                 [
-                    new Part
-                    {
-                        InlineData = _inlineData
-                    },
                     new Part
                     {
                         Text = _prompt
