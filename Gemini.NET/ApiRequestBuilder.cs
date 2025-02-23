@@ -86,7 +86,7 @@ namespace Gemini.NET
                 {
                     new SafetySetting
                     {
-                        Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),
+                        Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),          
                     },
                     new SafetySetting
                     {
