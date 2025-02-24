@@ -20,7 +20,7 @@ namespace Models.Request
         /// This includes parameters like temperature, top-k, and maximum output tokens.
         /// </summary>
         [JsonProperty("generationConfig")]
-        public GenerationConfig GenerationConfig { get; set; }
+        public GenerationConfig? GenerationConfig { get; set; }
 
         /// <summary>
         /// The system instructions that guide the model's behavior.

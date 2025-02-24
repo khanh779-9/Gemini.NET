@@ -17,9 +17,9 @@ namespace Gemini.NET
         private string? _systemInstruction;
         private GenerationConfig? _config;
         private bool _useGrounding = false;
-        private List<SafetySetting>? _safetySettings;
+        private IEnumerable<SafetySetting>? _safetySettings;
         private List<Content>? _chatHistory;
-        private List<ImageData>? _images;
+        private IEnumerable<ImageData>? _images;
 
         /// <summary>
         /// Sets the system instruction for the API request.
@@ -70,7 +70,7 @@ namespace Gemini.NET
         /// </summary>
         /// <param name="safetySettings">The list of safety settings to set.</param>
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
-        public ApiRequestBuilder WithSafetySettings(List<SafetySetting> safetySettings)
+        public ApiRequestBuilder WithSafetySettings(IEnumerable<SafetySetting> safetySettings)
         {
             _safetySettings = safetySettings;
             return this;
@@ -82,8 +82,8 @@ namespace Gemini.NET
         /// <returns>The current instance of <see cref="ApiRequestBuilder"/>.</returns>
         public ApiRequestBuilder DisableAllSafetySettings()
         {
-            _safetySettings = new List<SafetySetting>
-                {
+            _safetySettings =
+                [
                     new SafetySetting
                     {
                         Category = EnumHelper.GetDescription(SafetySettingHarmCategory.DangerousContent),
@@ -104,7 +104,7 @@ namespace Gemini.NET
                     {
                         Category = EnumHelper.GetDescription(SafetySettingHarmCategory.SexuallyExplicit),
                     },
-                };
+                ];
 
             return this;
         }
@@ -155,9 +155,9 @@ namespace Gemini.NET
         /// <param name="chatMessages"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public ApiRequestBuilder WithChatHistory(List<ChatMessage> chatMessages)
+        public ApiRequestBuilder WithChatHistory(IEnumerable<ChatMessage> chatMessages)
         {
-            if (chatMessages == null || chatMessages.Count == 0)
+            if (chatMessages == null || !chatMessages.Any())
             {
                 throw new ArgumentNullException(nameof(chatMessages), "Chat history can't be null or empty.");
             }
@@ -183,9 +183,9 @@ namespace Gemini.NET
         /// Sets the Base64 images for the API request.
         /// </summary>
         /// <returns></returns>
-        public ApiRequestBuilder WithBase64Images(List<string> images)
+        public ApiRequestBuilder WithBase64Images(IEnumerable<string> images)
         {
-            _images = images.Select(ImageHelper.AsImageData).ToList();
+            _images = images.Select(ImageHelper.AsImageData);
             return this;
         }
 
@@ -201,11 +201,9 @@ namespace Gemini.NET
                 throw new ArgumentNullException(nameof(_prompt), "Prompt can't be an empty string.");
             }
 
-            var contents = _chatHistory == null
-                ? new List<Content>()
-                : _chatHistory;
+            var contents = _chatHistory ?? [];
 
-            if (_images != null)
+            if (_images != null && _images.Any())
             {
                 contents.Add(new Content
                 {
@@ -239,27 +237,27 @@ namespace Gemini.NET
             {
                 Contents = contents,
                 GenerationConfig = _config,
-                SafetySettings = _safetySettings,
+                SafetySettings = _safetySettings?.ToList(),
                 Tools = _useGrounding
-                    ? new List<Tool>
-                    {
+                    ?
+                    [
                             new Tool
                             {
                                 GoogleSearch = new GoogleSearch()
                             }
-                    }
+                    ]
                     : null,
                 SystemInstruction = string.IsNullOrEmpty(_systemInstruction)
                     ? null
                     : new SystemInstruction
                     {
-                        Parts = new List<Part>
-                        {
+                        Parts =
+                        [
                                 new Part
                                 {
                                     Text = _systemInstruction
                                 }
-                        }
+                        ]
                     }
             };
         }

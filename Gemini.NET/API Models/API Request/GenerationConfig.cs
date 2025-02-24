@@ -42,7 +42,7 @@ namespace Models.Request
         /// Default value is 8192.
         /// </summary>
         [JsonProperty("maxOutputTokens")]
-        public int MaxOutputTokens { get; set; } = 8192;
+        public int? MaxOutputTokens { get; set; }
 
         /// <summary>
         /// The MIME type of the expected response.
