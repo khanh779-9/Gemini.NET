@@ -197,9 +197,8 @@ namespace Gemini.NET
                             Result = dto.Candidates[0].Content != null
                                 ? dto.Candidates[0].Content.Parts[0].Text.Trim()
                                 : "Failed to generate content",
-                            GroundingDetail = groudingMetadata == null || !_includesGroundingDetailInResponse
-                                ? null
-                                : new GroundingDetail
+                            GroundingDetail = groudingMetadata != null && !_includesGroundingDetailInResponse
+                                ? new GroundingDetail
                                 {
                                     RenderedContentAsHtml = _includesSearchEntryPointInResponse
                                         ? groudingMetadata?.SearchEntryPoint?.RenderedContent
@@ -207,16 +206,15 @@ namespace Gemini.NET
                                     SearchSuggestions = groudingMetadata?.WebSearchQueries,
                                     ReliableInformation = groudingMetadata?.GroundingSupports?
                                         .OrderByDescending(s => s.ConfidenceScores.Max())
-                                        .Select(s => s.Segment.Text)
-                                        .ToList(),
+                                        .Select(s => s.Segment.Text),
                                     Sources = groudingMetadata?.GroundingChunks?
                                         .Select(c => new GroundingSource
                                         {
                                             Domain = c.Web.Title,
                                             Url = c.Web.Uri,
-                                        })
-                                        .ToList(),
-                                },
+                                        }),
+                                }
+                                : null,
                         };
                     }
                 }
