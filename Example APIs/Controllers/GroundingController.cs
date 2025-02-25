@@ -1,4 +1,5 @@
 ﻿using Gemini.NET;
+using Gemini.NET.Client_Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Example_APIs.Controllers
@@ -17,6 +18,7 @@ namespace Example_APIs.Controllers
             var apiRequest = new ApiRequestBuilder()
                 .WithPrompt(prompt)
                 .EnableGrounding()
+                .WithChatHistory(new List<ChatMessage>())
                 .WithDefaultGenerationConfig()
                 .DisableAllSafetySettings()
                 .Build();

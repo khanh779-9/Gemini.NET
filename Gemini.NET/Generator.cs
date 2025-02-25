@@ -208,13 +208,15 @@ namespace Gemini.NET
                                     SearchSuggestions = groudingMetadata?.WebSearchQueries,
                                     ReliableInformation = groudingMetadata?.GroundingSupports?
                                         .OrderByDescending(s => s.ConfidenceScores.Max())
-                                        .Select(s => s.Segment.Text),
+                                        .Select(s => s.Segment.Text)
+                                        .ToList(),
                                     Sources = groudingMetadata?.GroundingChunks?
                                         .Select(c => new GroundingSource
                                         {
                                             Domain = c.Web.Title,
                                             Url = c.Web.Uri,
-                                        }),
+                                        })
+                                        .ToList(),
                                 }
                                 : null,
                         };

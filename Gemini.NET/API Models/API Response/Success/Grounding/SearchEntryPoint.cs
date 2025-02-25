@@ -5,6 +5,6 @@ namespace Models.Response.Success
     public class SearchEntryPoint
     {
         [JsonProperty("renderedContent")]
-        public string RenderedContent { get; set; }
+        public string? RenderedContent { get; set; }
     }
 }
