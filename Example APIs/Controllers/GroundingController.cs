@@ -24,7 +24,7 @@ namespace Example_APIs.Controllers
             try
             {
                 var response = await generatorWithApiKey.GenerateContentAsync(apiRequest, Generator.GetLatestStableModelVersion());
-                return Ok(response.Result);
+                return Ok(response);
             }
             catch (Exception ex)
             {

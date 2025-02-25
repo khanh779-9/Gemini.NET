@@ -192,12 +192,14 @@ namespace Gemini.NET
                         var dto = JsonHelper.AsObject<Models.Response.Success.ApiResponse>(responseData);
                         var groudingMetadata = dto.Candidates[0].GroundingMetadata;
 
+                        Console.WriteLine(responseData);
+
                         return new ModelResponse
                         {
                             Result = dto.Candidates[0].Content != null
                                 ? dto.Candidates[0].Content.Parts[0].Text.Trim()
                                 : "Failed to generate content",
-                            GroundingDetail = groudingMetadata != null && !_includesGroundingDetailInResponse
+                            GroundingDetail = groudingMetadata != null && _includesGroundingDetailInResponse
                                 ? new GroundingDetail
                                 {
                                     RenderedContentAsHtml = _includesSearchEntryPointInResponse
