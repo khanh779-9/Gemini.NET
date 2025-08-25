@@ -7,7 +7,7 @@
 
 **Gemini.NET** is a lightweight and user-friendly .NET SDK designed to simplify the integration of Google's Gemini API into your .NET applications. It provides a straightforward and efficient way to generate content, manage API requests, and leverage Gemini's powerful features.
 
-## **✨ Key Features**
+## **✨ Key Features** 
 
 * **Simple API Request Builder:**  Easily construct Gemini API requests with a fluent and intuitive interface.
 * **Latest Gemini Models:** Supports the most recent Gemini model versions, ensuring access to the latest advancements.
